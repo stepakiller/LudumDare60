@@ -22,6 +22,9 @@ public class MissionGenerator : MonoBehaviour
     [Header("Ракеты")]
     [SerializeField] string[] rocketNames = { "Mary", "Alice", "Vera", "Nadia", "Olga", "Irene", "Lucy", "Diana", "Greta", "Sonya" };
 
+    [Header("Описания")]
+    [SerializeField, TextArea(2, 5)] string[] descriptions = {};
+
     [Header("Параметры")]
     [SerializeField] ChargeSelector chargeSelector;
     [SerializeField] int[] trajectories = { 30, 45, 60, 75, 90 };
@@ -32,6 +35,14 @@ public class MissionGenerator : MonoBehaviour
     [SerializeField] float startTolerance = 1f;
     [SerializeField] float minTolerance = 0.4f;
     [SerializeField] float toleranceDecay = 0.95f;
+
+    [Header("Время на миссию")]
+    [SerializeField] TimeStage[] timeStages =
+    {
+        new TimeStage { fromMission = 1, seconds = 600f },
+        new TimeStage { fromMission = 6, seconds = 450f },
+        new TimeStage { fromMission = 11, seconds = 300f }
+    };
 
     [Header("Случайность")]
     [SerializeField] int seed;
@@ -46,6 +57,7 @@ public class MissionGenerator : MonoBehaviour
     Vector2 previousTarget;
     bool hasPrevious;
     string previousName;
+    string previousDescription;
 
     void Init()
     {
@@ -63,11 +75,7 @@ public class MissionGenerator : MonoBehaviour
             }
         }
 
-        if (landMask != null && !landMask.isReadable)
-        {
-            Debug.LogWarning($"MissionGenerator: включите Read/Write у текстуры {landMask.name}, иначе цели могут оказаться в океане");
-            landMask = null;
-        }
+        if (landMask != null && !landMask.isReadable) landMask = null;
 
         if (planetMesh != null && planetMesh.sharedMesh != null && planetMesh.sharedMesh.isReadable)
         {
@@ -95,6 +103,8 @@ public class MissionGenerator : MonoBehaviour
         RocketTask task = new RocketTask
         {
             rocketName = PickName(),
+            description = PickDescription(),
+            timeLimit = TimeLimitFor(missionIndex + 1),
             targetLongitude = target.x,
             targetLatitude = target.y,
             coordinatesTolerance = tolerance,
@@ -190,6 +200,32 @@ public class MissionGenerator : MonoBehaviour
         return name;
     }
 
+    float TimeLimitFor(int missionNumber)
+    {
+        float seconds = 600f;
+        int bestFrom = int.MinValue;
+        if (timeStages == null) return seconds;
+
+        foreach (TimeStage stage in timeStages)
+        {
+            if (stage.fromMission > missionNumber || stage.fromMission < bestFrom) continue;
+            bestFrom = stage.fromMission;
+            seconds = stage.seconds;
+        }
+
+        return seconds;
+    }
+
+    string PickDescription()
+    {
+        if (descriptions == null || descriptions.Length == 0) return "";
+        string text = descriptions[random.Next(descriptions.Length)];
+        if (descriptions.Length > 1 && text == previousDescription)
+            text = descriptions[random.Next(descriptions.Length)];
+        previousDescription = text;
+        return text;
+    }
+
     ChargeData PickCharge()
     {
         if (chargeSelector == null || chargeSelector.Charges == null || chargeSelector.Charges.Count == 0) return null;
@@ -208,4 +244,11 @@ public class MissionGenerator : MonoBehaviour
         }
         return new string(pool, 0, length);
     }
+}
+
+[System.Serializable]
+public struct TimeStage
+{
+    [Min(1)] public int fromMission;
+    [Min(1f)] public float seconds;
 }

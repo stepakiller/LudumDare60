@@ -15,6 +15,6 @@ MonoBehaviour:
   chargeName: Ragnarok
   description: An experimental, next-generation missile, created as a final means
     of deterring an adversary.
-  icon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  diagram: {fileID: 21300000, guid: b6329a7c5668a74418ea59508f58915d, type: 3}
-  rocketPrefab: {fileID: 2544324641403614172, guid: 9ce893832d0874f4f9970f5cc6f2ac57, type: 3}
+  icon: {fileID: 21300000, guid: 069a998af4938474e8a477cd36a357f1, type: 3}
+  diagram: {fileID: 21300000, guid: fd19c52075c086045925f2e917971577, type: 3}
+  rocketPrefab: {fileID: 1641865249214015254, guid: d4fb3742b59f85044b575f58cad50bcc, type: 3}

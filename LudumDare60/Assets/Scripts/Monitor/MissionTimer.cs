@@ -23,10 +23,14 @@ public class MissionTimer : MonoBehaviour
     public bool IsRunning { get; private set; }
 
     int shownSeconds = -1;
+    float currentDuration;
 
-    public void Restart()
+    public void Restart() => Restart(duration);
+
+    public void Restart(float seconds)
     {
-        Remaining = duration;
+        currentDuration = seconds > 0f ? seconds : duration;
+        Remaining = currentDuration;
         IsRunning = true;
         shownSeconds = -1;
         UpdateView();
@@ -61,7 +65,7 @@ public class MissionTimer : MonoBehaviour
         shownSeconds = seconds;
 
         timerText.text = $"{seconds / 60:00}:{seconds % 60:00}";
-        timerText.color = ColorFor(duration > 0f ? Remaining / duration : 0f);
+        timerText.color = ColorFor(currentDuration > 0f ? Remaining / currentDuration : 0f);
     }
 
     Color ColorFor(float fraction)

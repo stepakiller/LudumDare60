@@ -16,5 +16,5 @@ MonoBehaviour:
   description: An experimental charge of a new generation. A symbol of fire that
     humanity will no longer be able to control.
   icon: {fileID: 21300000, guid: e36110037bfa6ae4e96da801c794f0ec, type: 3}
-  diagram: {fileID: 21300000, guid: b6329a7c5668a74418ea59508f58915d, type: 3}
+  diagram: {fileID: 21300000, guid: 3d1e0b9c9a8bce046b4fe63f02fe9ae3, type: 3}
   rocketPrefab: {fileID: 2097777655199555966, guid: 1e21a13363787ac4492d42bcd60c0917, type: 3}

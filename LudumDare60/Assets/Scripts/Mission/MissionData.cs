@@ -10,6 +10,8 @@ public class MissionData : ScriptableObject
 public class RocketTask
 {
     public string rocketName = "Mary";
+    [TextArea(2, 5)] public string description;
+    [Min(0f)] public float timeLimit = 600f;
 
     [Header("Цель")]
     [Range(-90f, 90f)] public float targetLatitude;

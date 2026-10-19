@@ -28,6 +28,7 @@ public class RocketFlight : MonoBehaviour
 
     readonly Vector3[] path = new Vector3[FlightPathLine.MaxPoints];
     readonly float[] distances = new float[FlightPathLine.MaxPoints];
+    readonly Vector3[] checkPath = new Vector3[FlightPathLine.MaxPoints];
     readonly Dictionary<GameObject, Transform> rocketInstances = new Dictionary<GameObject, Transform>();
     Transform current;
     int count;
@@ -38,6 +39,14 @@ public class RocketFlight : MonoBehaviour
     void Awake()
     {
         if (rocket != null) rocket.gameObject.SetActive(false);
+    }
+
+    public LaunchResult CanLaunch(FlightPathLine flightPath, ChargeData charge)
+    {
+        if (IsFlying) return LaunchResult.AlreadyFlying;
+        if (GetRocket(charge) == null) return LaunchResult.NoRocketModel;
+        if (flightPath.BakePath(checkPath) < 2) return LaunchResult.NoTarget;
+        return LaunchResult.Launched;
     }
 
     public LaunchResult Launch(FlightPathLine flightPath, ChargeData charge)

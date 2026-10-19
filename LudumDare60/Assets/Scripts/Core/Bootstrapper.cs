@@ -49,6 +49,9 @@ public class Bootstrapper : MonoBehaviour
     [SerializeField] LaunchCover launchCover;
     [SerializeField] MonitorCameraDirector cameraDirector;
     [SerializeField] MissionTimer missionTimer;
+    [SerializeField] LaunchCountdown launchCountdown;
+    [SerializeField] Siren siren;
+    [SerializeField] LaunchShake launchShake;
 
     [Header("Зум монитора")]
     [SerializeField] RotaryKnob zoomKnob;
@@ -74,6 +77,7 @@ public class Bootstrapper : MonoBehaviour
         launchButton.Pressed += OnLaunchPressed;
         rocketFlight.Arrived += OnRocketArrived;
         explosion.Finished += OnExplosionFinished;
+        if (launchCountdown != null) launchCountdown.FinalShown += OnLiftOff;
     }
 
     void OnDisable()
@@ -96,6 +100,7 @@ public class Bootstrapper : MonoBehaviour
         launchButton.Pressed -= OnLaunchPressed;
         rocketFlight.Arrived -= OnRocketArrived;
         explosion.Finished -= OnExplosionFinished;
+        if (launchCountdown != null) launchCountdown.FinalShown -= OnLiftOff;
     }
 
     void Start()
@@ -154,6 +159,7 @@ public class Bootstrapper : MonoBehaviour
     bool chargesOpen;
     bool launchReady;
     bool rocketInFlight;
+    bool launching;
 
     void SetControlsLocked(bool locked)
     {
@@ -182,7 +188,7 @@ public class Bootstrapper : MonoBehaviour
     void OnTaskChanged(RocketTask task)
     {
         rocketNameText.text = "Rocket: " + task.rocketName;
-        if (missionTimer != null) missionTimer.Restart();
+        if (missionTimer != null) missionTimer.Restart(task.timeLimit);
         config.currentPinCode = "";
         pinKeypad.ResetKeypad();
         OnTargetChanged(targetResolver.HasTarget, targetResolver.Coordinates);
@@ -190,6 +196,8 @@ public class Bootstrapper : MonoBehaviour
 
     void OnTargetChanged(bool hasTarget, Vector2 coordinates)
     {
+        if (launching) return;
+
         config.hasTarget = hasTarget;
         config.currentCoordinates = coordinates;
         coordinatesDisplay.Show(hasTarget, coordinates);
@@ -218,28 +226,54 @@ public class Bootstrapper : MonoBehaviour
 
     void OnLaunchPressed()
     {
-        switch (rocketFlight.Launch(flightPath, config.currentCharge))
+        if (launching) return;
+
+        LaunchResult check = rocketFlight.CanLaunch(flightPath, config.currentCharge);
+        if (check != LaunchResult.Launched) return;
+
+        launching = true;
+        launchButton.IsLocked = true;
+        flightPath.SetHidden(true);
+        if (missionTimer != null) missionTimer.Stop();
+        if (siren != null) siren.SetOn(true);
+
+        if (launchCountdown != null)
         {
-            case LaunchResult.Launched:
-                flightPath.SetHidden(true);
-                launchButton.IsLocked = true;
-                rocketInFlight = true;
-                ApplyLocks();
-                if (cameraDirector != null) cameraDirector.StartTracking();
-                if (missionTimer != null) missionTimer.Stop();
-                break;
-            case LaunchResult.AlreadyFlying:
-                Debug.Log("Пуск невозможен: предыдущая ракета ещё в полёте");
-                break;
-            case LaunchResult.NoRocketModel:
-                Debug.Log(config.currentCharge == null
-                    ? "Пуск невозможен: заряд не выбран"
-                    : $"Пуск невозможен: у заряда {config.currentCharge.chargeName} не указан Rocket Prefab");
-                break;
-            case LaunchResult.NoTarget:
-                Debug.Log("Пуск невозможен: прицел не наведён на планету");
-                break;
+            launchCountdown.Play(LaunchRocket);
         }
+        else
+        {
+            OnLiftOff();
+            LaunchRocket();
+        }
+    }
+
+    void OnLiftOff()
+    {
+        if (launchShake != null) launchShake.Play(StopSiren);
+    }
+
+    void StopSiren()
+    {
+        if (siren != null) siren.SetOn(false);
+    }
+
+    void LaunchRocket()
+    {
+        launching = false;
+        LaunchResult result = rocketFlight.Launch(flightPath, config.currentCharge);
+        if (result != LaunchResult.Launched)
+        {
+            if (siren != null) siren.SetOn(false);
+            flightPath.SetHidden(false);
+            launchButton.IsLocked = false;
+            RefreshIndicators();
+            return;
+        }
+
+        rocketInFlight = true;
+        ApplyLocks();
+        if (cameraDirector != null) cameraDirector.StartTracking();
     }
 
     void OnRocketArrived()
@@ -253,6 +287,7 @@ public class Bootstrapper : MonoBehaviour
     {
         rocketInFlight = false;
         ApplyLocks();
+        if (siren != null) siren.SetOn(false);
         if (cameraDirector != null) cameraDirector.StopTracking();
         launchValidator.NextMission();
         launchButton.IsLocked = false;
@@ -260,7 +295,7 @@ public class Bootstrapper : MonoBehaviour
 
     void RefreshIndicators()
     {
-        if (rocketInFlight) return;
+        if (rocketInFlight || launching) return;
 
         coordinatesLamp.SetOn(launchValidator.IsCoordinatesCorrect);
         trajectoryLamp.SetOn(launchValidator.IsTrajectoryCorrect);
@@ -272,7 +307,6 @@ public class Bootstrapper : MonoBehaviour
         if (ready == launchReady) return;
 
         launchReady = ready;
-        if (ready) Debug.Log("Все параметры настроены, управление заблокировано");
         ApplyLocks();
         launchCover.SetOpen(ready);
     }

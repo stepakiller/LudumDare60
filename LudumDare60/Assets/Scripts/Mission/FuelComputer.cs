@@ -73,7 +73,6 @@ public class FuelComputer : MonoBehaviour
         if (correct == wasCorrect) return;
         wasCorrect = correct;
 
-        if (correct) Debug.Log($"Топливо настроено правильно: {CurrentFuel}%");
         FuelCorrectChanged?.Invoke(correct);
     }
 }

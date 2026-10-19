@@ -15,6 +15,6 @@ MonoBehaviour:
   chargeName: Eventide
   description: A strategic payload intended for a scenario in which all other options
     have been exhausted.
-  icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
-  diagram: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+  icon: {fileID: 21300000, guid: 6d282fe6e0ba1c64d9fe4bbb5d067a37, type: 3}
+  diagram: {fileID: 21300000, guid: 609cdf43191690048ae6fa763e1e8c0b, type: 3}
   rocketPrefab: {fileID: 6900170063143663099, guid: 2a2a5c3760709c44a80f086d446106d3, type: 3}

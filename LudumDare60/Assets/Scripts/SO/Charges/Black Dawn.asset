@@ -15,5 +15,5 @@ MonoBehaviour:
   chargeName: Black Dawn
   description: A classified development for which no official documentation exists.
   icon: {fileID: 21300000, guid: 41231c512336342479a610d7ab1d78d7, type: 3}
-  diagram: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  diagram: {fileID: 21300000, guid: 8e2c5508b8aad584990ecd4a677a48d1, type: 3}
   rocketPrefab: {fileID: 2544324641403614172, guid: 9ce893832d0874f4f9970f5cc6f2ac57, type: 3}

@@ -29,11 +29,6 @@ public class LaunchValidator : MonoBehaviour
     void ShowTask()
     {
         currentTask = CurrentTask;
-        string charge = currentTask.charge != null ? currentTask.charge.chargeName : "любой";
-        Debug.Log($"Миссия {MissionIndex + 1}: ракета {currentTask.rocketName}, " +
-                  $"широта {currentTask.targetLatitude:0.0}, долгота {currentTask.targetLongitude:0.0}, " +
-                  $"допуск {currentTask.coordinatesTolerance:0.##}°, траектория {currentTask.trajectory}°, " +
-                  $"заряд {charge}, пин-код {currentTask.pinCode}");
     }
 
     void OnDestroy()
@@ -107,13 +102,4 @@ public class LaunchValidator : MonoBehaviour
 
     [ContextMenu("Следующая миссия")]
     void NextMissionFromMenu() => NextMission();
-
-    [ContextMenu("Проверить настройки")]
-    void ValidateAndLog()
-    {
-        if (Validate(out List<string> errors))
-            Debug.Log($"[{CurrentTask.rocketName}] Всё верно, пуск разрешён");
-        else
-            Debug.LogWarning($"[{CurrentTask.rocketName}] Ошибки настройки:\n" + string.Join("\n", errors));
-    }
 }
