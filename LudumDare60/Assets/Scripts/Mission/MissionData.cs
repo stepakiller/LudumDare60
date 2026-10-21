@@ -9,6 +9,7 @@ public class MissionData : ScriptableObject
 [Serializable]
 public class RocketTask
 {
+    public string missionName;
     public string rocketName = "Mary";
     [TextArea(2, 5)] public string description;
     [Min(0f)] public float timeLimit = 600f;
