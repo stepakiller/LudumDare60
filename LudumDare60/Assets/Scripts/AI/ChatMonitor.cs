@@ -22,6 +22,7 @@ public class ChatMonitor : Interactable
 
     public override bool LocksCursor => false;
     public bool IsFocused { get; private set; }
+    public bool IsBusy => IsFocused || moving || focusRequested;
 
     Vector3 savedPosition;
     Quaternion savedRotation;

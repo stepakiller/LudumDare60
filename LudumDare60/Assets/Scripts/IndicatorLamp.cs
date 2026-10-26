@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class IndicatorLamp : MonoBehaviour
     [SerializeField] float punchScale = 0.15f;
     [SerializeField] float punchDuration = 0.25f;
 
+    public event Action<bool> Switched;
     public bool IsOn { get; private set; }
 
     bool initialized;
@@ -30,6 +32,7 @@ public class IndicatorLamp : MonoBehaviour
         initialized = true;
         IsOn = value;
         ApplyMaterial();
+        Switched?.Invoke(value);
 
         if (!justTurnedOn || punchScale <= 0f) return;
 

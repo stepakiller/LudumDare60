@@ -26,6 +26,7 @@ public class RocketChatRequest
     public string mission;
     public string pin;
     public string message;
+    public int turn;
     public RocketChatLine[] history;
 }
 
@@ -55,7 +56,7 @@ public class RocketAIClient : MonoBehaviour
 
     public bool IsBusy { get; private set; }
 
-    public void Send(string rocket, string charge, string mission, string pin, string message, IReadOnlyList<RocketChatLine> history, Action<RocketChatReply> onReply)
+    public void Send(string rocket, string charge, string mission, string pin, string message, IReadOnlyList<RocketChatLine> history, Action<RocketChatReply> onReply, int turn = 0)
     {
         if (IsBusy) return;
 
@@ -66,6 +67,7 @@ public class RocketAIClient : MonoBehaviour
             mission = mission ?? "",
             pin = pin ?? "",
             message = message,
+            turn = turn,
             history = CopyHistory(history)
         };
 

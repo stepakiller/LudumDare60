@@ -4,6 +4,7 @@ Shader "LudumDare60/ImageBurn"
     {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
+        [HideInInspector] _BurnSupported ("Burn Supported", Float) = 1
         _StencilComp ("Stencil Comparison", Float) = 8
         _Stencil ("Stencil ID", Float) = 0
         _StencilOp ("Stencil Operation", Float) = 0

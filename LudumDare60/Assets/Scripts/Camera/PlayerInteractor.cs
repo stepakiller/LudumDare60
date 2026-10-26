@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,6 +8,9 @@ public class PlayerInteractor : MonoBehaviour
     [SerializeField] float maxDistance = 10f;
     [SerializeField] LayerMask interactableMask = ~0;
     [SerializeField] bool lockCursorWhileDragging = true;
+
+    public event Action<Interactable> HoverChanged;
+    public Interactable Hovered => hovered;
 
     Interactable hovered;
     Interactable dragged;
@@ -86,5 +90,6 @@ public class PlayerInteractor : MonoBehaviour
         if (hovered != null) hovered.OnHoverExit();
         hovered = newHovered;
         if (hovered != null) hovered.OnHoverEnter();
+        HoverChanged?.Invoke(hovered);
     }
 }

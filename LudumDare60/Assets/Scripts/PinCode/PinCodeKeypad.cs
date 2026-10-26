@@ -10,6 +10,8 @@ public class PinCodeKeypad : MonoBehaviour
     [SerializeField] float rejectDelay = 0.35f;
 
     public event Action<string> CodeEntered;
+    public event Action Accepted;
+    public event Action Rejected;
     public bool IsAccepted { get; private set; }
 
     readonly StringBuilder input = new StringBuilder();
@@ -44,12 +46,14 @@ public class PinCodeKeypad : MonoBehaviour
     {
         busy = false;
         IsAccepted = true;
+        Accepted?.Invoke();
     }
 
     public void Reject()
     {
         rejectTween?.Kill();
         rejectTween = DOVirtual.DelayedCall(rejectDelay, ResetKeypad).SetLink(gameObject);
+        Rejected?.Invoke();
     }
 
     public void ResetKeypad()

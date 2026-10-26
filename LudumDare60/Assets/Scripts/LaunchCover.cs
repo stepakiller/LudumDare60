@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ public class LaunchCover : MonoBehaviour
     [SerializeField] float openOvershoot = 1.70158f;
     [SerializeField] Ease closeEase = Ease.InOutQuad;
 
+    public event Action<bool> OpenChanged;
     public bool IsOpen { get; private set; }
 
     Quaternion closedRotation;
@@ -34,5 +36,6 @@ public class LaunchCover : MonoBehaviour
         rotateTween = DOTween.To(t => cover.localRotation = Quaternion.SlerpUnclamped(from, to, t), 0f, 1f, duration)
                              .SetEase(open ? openEase : closeEase, open ? openOvershoot : 1.70158f)
                              .SetLink(gameObject);
+        OpenChanged?.Invoke(open);
     }
 }

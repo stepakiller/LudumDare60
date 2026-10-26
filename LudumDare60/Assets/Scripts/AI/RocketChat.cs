@@ -32,6 +32,7 @@ public class RocketChat : MonoBehaviour
     string mission;
     string pin;
     int contextVersion;
+    int operatorTurns;
 
     void OnEnable()
     {
@@ -63,6 +64,7 @@ public class RocketChat : MonoBehaviour
         mission = newMission ?? "";
         pin = newPin ?? "";
         contextVersion++;
+        operatorTurns = 0;
         history.Clear();
         visible.Clear();
         Redraw(false);
@@ -91,6 +93,7 @@ public class RocketChat : MonoBehaviour
 
         int version = contextVersion;
         string speaker = rocketName;
+        operatorTurns++;
         client.Send(rocketName, charge, mission, pin, text, history, reply =>
         {
             if (version != contextVersion) return;
@@ -103,7 +106,7 @@ public class RocketChat : MonoBehaviour
             Redraw(false);
             if (moodText != null) moodText.text = reply.offline ? offlineMoodText : (reply.mood ?? noMoodText).ToUpperInvariant();
             Replied?.Invoke(reply);
-        });
+        }, operatorTurns);
     }
 
     string HighlightPin(string text)

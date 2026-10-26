@@ -20,6 +20,7 @@ public class CrosshairController : MonoBehaviour
     [SerializeField] Color onTargetColor = new Color(1f, 0.05f, 0.05f, 1f);
 
     public event Action<Vector2> PositionChanged;
+    public event Action<bool> OnTargetChanged;
     public Vector2 Position { get; private set; }
     public Vector2 ViewportPosition => Position * 0.5f + new Vector2(0.5f, 0.5f);
 
@@ -53,6 +54,8 @@ public class CrosshairController : MonoBehaviour
 
         for (int i = 0; i < coloredParts.Length; i++)
             if (coloredParts[i] != null) coloredParts[i].color = value ? onTargetColor : normalColors[i];
+
+        OnTargetChanged?.Invoke(value);
     }
 
     void Update()

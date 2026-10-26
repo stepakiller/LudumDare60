@@ -21,6 +21,7 @@ public class RocketFlight : MonoBehaviour
     [SerializeField] float spinSpeed = 360f;
     [SerializeField] bool hideOnArrival = true;
 
+    public event Action Launched;
     public event Action Arrived;
     public bool IsFlying { get; private set; }
     public float Progress => progress;
@@ -75,6 +76,7 @@ public class RocketFlight : MonoBehaviour
                              .SetEase(ease)
                              .SetLink(gameObject)
                              .OnComplete(OnArrived);
+        Launched?.Invoke();
         return LaunchResult.Launched;
     }
 

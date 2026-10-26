@@ -19,6 +19,7 @@ public class MissionTimer : MonoBehaviour
     [SerializeField, Range(0f, 1f)] float criticalAt = 0.1f;
 
     public event Action Expired;
+    public event Action<int> SecondTicked;
     public float Remaining { get; private set; }
     public bool IsRunning { get; private set; }
 
@@ -66,6 +67,7 @@ public class MissionTimer : MonoBehaviour
 
         timerText.text = $"{seconds / 60:00}:{seconds % 60:00}";
         timerText.color = ColorFor(currentDuration > 0f ? Remaining / currentDuration : 0f);
+        SecondTicked?.Invoke(seconds);
     }
 
     Color ColorFor(float fraction)

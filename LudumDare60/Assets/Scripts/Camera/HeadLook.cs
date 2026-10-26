@@ -12,6 +12,8 @@ public class HeadLook : MonoBehaviour
     [SerializeField] float sharpness = 4f;
     [SerializeField] bool freezeWhileDragging = true;
 
+    public static bool FollowCursor = true;
+
     Quaternion baseRotation;
     Vector2 current;
     Vector2 target;
@@ -33,7 +35,8 @@ public class HeadLook : MonoBehaviour
         Mouse mouse = Mouse.current;
         bool frozen = freezeWhileDragging && Cursor.lockState == CursorLockMode.Locked;
 
-        if (mouse != null && !frozen && Application.isFocused)
+        if (!FollowCursor) target = Vector2.zero;
+        else if (mouse != null && !frozen && Application.isFocused)
             target = CursorOffset(mouse.position.ReadValue());
 
         current = Vector2.Lerp(current, target, 1f - Mathf.Exp(-sharpness * Time.deltaTime));

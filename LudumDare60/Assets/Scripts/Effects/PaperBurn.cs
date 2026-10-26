@@ -33,7 +33,11 @@ public class PaperBurn : MonoBehaviour
     [SerializeField, HideInInspector] Vector4 uvRowU = new Vector4(0.1f, 0f, 0f, 0.5f);
     [SerializeField, HideInInspector] Vector4 uvRowV = new Vector4(0f, 0f, 0.1f, 0.5f);
 
+    public event System.Action BurnStarted;
+    public event System.Action PrintStarted;
+
     static readonly int BurnId = Shader.PropertyToID("_Burn");
+    static readonly int BurnSupportedId = Shader.PropertyToID("_BurnSupported");
     static readonly int OriginId = Shader.PropertyToID("_BurnOrigin");
     static readonly int NoiseScaleId = Shader.PropertyToID("_NoiseScale");
     static readonly int NoiseStrengthId = Shader.PropertyToID("_NoiseStrength");
@@ -137,6 +141,7 @@ public class PaperBurn : MonoBehaviour
         SetTextAlpha(1f);
         sequence = DOTween.Sequence()
             .AppendInterval(burnDelay)
+            .AppendCallback(() => BurnStarted?.Invoke())
             .Append(DOTween.To(() => burn, SetBurn, 1f, burnDuration).SetEase(burnEase))
             .AppendInterval(restoreDelay)
             .AppendCallback(Restore)
@@ -164,6 +169,7 @@ public class PaperBurn : MonoBehaviour
         sheetRoot.localPosition = startPosition;
         sheetRoot.localRotation = faxRotation;
         if (printSound != null) printSound.Play();
+        PrintStarted?.Invoke();
 
         sequence = DOTween.Sequence()
             .Append(sheetRoot.DOLocalMove(basePosition, printDuration).SetEase(printEase))
@@ -244,6 +250,8 @@ public class PaperBurn : MonoBehaviour
             if (images[i] == null) continue;
             imageAlphas[i] = images[i].color.a;
             if (imageBurnShader == null) continue;
+            Material current = images[i].material;
+            if (current != null && current.HasProperty(BurnSupportedId)) continue;
             imageMaterials[i] = new Material(imageBurnShader);
             images[i].material = imageMaterials[i];
         }

@@ -18,6 +18,7 @@ public class LaunchCountdown : MonoBehaviour
     [SerializeField] Ease popEase = Ease.OutBack;
 
     public event Action FinalShown;
+    public event Action<int> Ticked;
     public bool IsRunning { get; private set; }
 
     Sequence sequence;
@@ -39,7 +40,12 @@ public class LaunchCountdown : MonoBehaviour
         for (int i = startFrom; i >= 1; i--)
         {
             string label = i.ToString();
-            sequence.AppendCallback(() => Pop(label));
+            int number = i;
+            sequence.AppendCallback(() =>
+            {
+                Pop(label);
+                Ticked?.Invoke(number);
+            });
             sequence.AppendInterval(stepDuration);
         }
 

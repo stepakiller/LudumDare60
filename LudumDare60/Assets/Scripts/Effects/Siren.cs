@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Siren : MonoBehaviour
@@ -8,6 +9,7 @@ public class Siren : MonoBehaviour
     [SerializeField] Vector3 axis = Vector3.up;
     [SerializeField] AudioSource sound;
 
+    public event Action<bool> Switched;
     public bool IsOn { get; private set; }
 
     void Awake()
@@ -26,6 +28,7 @@ public class Siren : MonoBehaviour
     {
         IsOn = on;
         if (root != null) root.SetActive(on);
+        Switched?.Invoke(on);
         if (sound == null) return;
         if (on) sound.Play();
         else sound.Stop();
